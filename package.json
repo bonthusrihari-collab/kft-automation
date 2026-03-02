@@ -11,7 +11,8 @@
     "playwright:test": "npx playwright test",
     "playwright:headed": "npx playwright test --headed",
     "playwright:ui": "npx playwright test --ui",
-    "playwright:example": "npx playwright test src/tests/playwright/example.spec.js --headed"
+    "playwright:example": "npx playwright test src/tests/playwright/example.spec.js --headed",
+    "playwright:codegen": "npx playwright codegen --target javascript src/tests/playwright/example.spec.js"
   },
   "keywords": [],
   "author": "",
