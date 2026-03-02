@@ -1,0 +1,36 @@
+{
+  "name": "backedn-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/tests/executionscript/muthootTokenGeneration.js --timeout 1000000",
+    "mock": "node src/utils/angelOneMockAPI.js --timeout 1000000",
+    "mobile": "node src/tests/mobile/sampleAppTest.js android --timeout 1000000",
+    "ios": "node src/tests/mobile/sampleAppTest.js ios --timeout 1000000",
+    "playwright:test": "npx playwright test",
+    "playwright:headed": "npx playwright test --headed",
+    "playwright:ui": "npx playwright test --ui",
+    "playwright:example": "npx playwright test src/tests/playwright/example.spec.js --headed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "chai": "^6.2.2",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.3.1",
+    "fs": "^0.0.1-security",
+    "mocha": "^11.7.5",
+    "supertest": "^7.2.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "appium": "^3.2.0",
+    "appium-uiautomator2-driver": "^7.0.0",
+    "appium-xcuitest-driver": "^10.24.1",
+    "webdriverio": "^9.24.0"
+  }
+}
