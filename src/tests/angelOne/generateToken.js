@@ -14,8 +14,13 @@ export async function generateToken() {
     let rawData = generateTokenBody('BONTHU1', apiResponse.shortToken)
     console.log(rawData)
     const response = await generateAuthToken(kftAuthBaseUrl, rawData, apiResponse.generateHashSha256, false)
+    console.log(response.body)
 
     writeToEnvSync({ AuthToken: response.body.Data.AuthToken, AuthCode: response.body.Data.AuthCode })
 
-    return response.body.Data.AuthToken
+    if (response.body.Data.AuthToken) {
+        return response.body.Data.AuthToken
+    } else {
+        console.log("Token not generated")
+    }
 }

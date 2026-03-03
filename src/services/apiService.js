@@ -86,7 +86,7 @@ export async function customerOffer(baseUrl, token, body) {
 
 export async function getKYCLeadData(baseUrl, token, leadId) {
     return await createClient(baseUrl)
-        .get("api/kyc")
+        .get("/api/kyc")
         .query({ leadId: leadId })
         .set('X-Aurix-Token', token)
         .set('Content-Type', 'application/json')
