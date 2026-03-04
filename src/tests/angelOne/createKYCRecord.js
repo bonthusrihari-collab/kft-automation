@@ -32,9 +32,3 @@ export async function getAMLRequest() {
     const response = await amlRequest(kftBaseUrl, token, leadId)
     console.log(response.body)
 }
-
-export async function getPledgedStocksDetails() {
-    console.log("Get Pledged Stocks Details API Triggered")
-    const response = await getPledgedStocks(kftBaseUrl, token, leadId)
-    console.log(response.body.Data.EligibleStocks)
-}
