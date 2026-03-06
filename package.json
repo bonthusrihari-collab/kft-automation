@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "install": "rm -rf node_modules package-lock.json && npm install",
     "test": "npx playwright test",
     "test:mocha": "mocha src/tests/**/*.js",
     "mock": "node src/utils/angelOneMockAPI.js",
