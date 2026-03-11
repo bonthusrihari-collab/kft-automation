@@ -8,3 +8,4 @@ videos
 trace
 playwright-report
 test-results
+process.log

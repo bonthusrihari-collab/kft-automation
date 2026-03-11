@@ -6,21 +6,17 @@ import { generateTokenBody } from "../../payloads/authPayload.js";
 export async function generateToken() {
 
     const shortToken = await getToken(angelOneBaseUrl)
-    console.log(shortToken.body)
 
     const apiResponse = await generateHashes(shortToken.body.data.short_token, 'BONTHU1')
-    console.log(apiResponse)
 
     let rawData = generateTokenBody('BONTHU1', apiResponse.shortToken)
-    console.log(rawData)
+
     const response = await generateAuthToken(kftAuthBaseUrl, rawData, apiResponse.generateHashSha256, false)
-    console.log(response.body)
 
-    writeToEnvSync({ AuthToken: response.body.Data.AuthToken, AuthCode: response.body.Data.AuthCode })
+    await writeToEnvSync({ AuthToken: response.body.Data.AuthToken, AuthCode: response.body.Data.AuthCode })
 
-    if (response.body.Data.AuthToken) {
-        return response.body.Data.AuthToken
-    } else {
-        console.log("Token not generated")
+    return {
+        AuthToken: response.body.Data.AuthToken,
+        AuthCode: response.body.Data.AuthCode
     }
 }

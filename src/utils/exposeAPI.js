@@ -2,10 +2,10 @@
 import axios from "axios";
 import fs from "fs";
 
-async function callData(isin, partyCode) {
+async function callData(EligibleISINCount, InEligibleISINCount, partyCode) {
     const response = await axios.post(`http://10.3.197.220:9090/nbfc/partycode/${partyCode}`, {
-        ineligibleIsins: 50,
-        eligibleIsins: isin
+        ineligibleIsins: InEligibleISINCount,
+        eligibleIsins: EligibleISINCount
     }, {
         headers: {
             'Content-Type': 'application/json'
@@ -15,12 +15,12 @@ async function callData(isin, partyCode) {
     return response.data;
 }
 
-async function updateIsin(isin, partycode, status = "pending") {
+async function updateIsin(isin, partycode, status = "pending", quantity = 0, price = 20.888) {
     try {
         const response = await axios.post(`http://10.3.197.220:9090/nbfc/isin/${isin}`, {
             partyCode: partycode,
-            quantity: 2567,
-            price: 20.888,
+            quantity: quantity,
+            price: price,
             isActive: true,
             pldege: status
         }, {
@@ -29,17 +29,14 @@ async function updateIsin(isin, partycode, status = "pending") {
             }
         });
         console.log(`✓ Updating ISIN ${isin} with status: ${status}`);
-        return response.data;
+        return { isin, success: true, status, price, quantity, data: response.data };
     } catch (error) {
         const errorData = error.response ? JSON.stringify(error.response.data) : '';
         console.error(`✗ Failed to update ISIN ${isin}:`, error.message, errorData);
         logToFile(`✗ Failed to update ISIN ${isin}: ${error.message} ${errorData}`);
         return { isin, success: false, error: error.message, data: error.response?.data };
     }
-
 }
-
-// https://ext.digio.in/#/gateway/exit?exitMessage=UPI%20Mandate%20cancelled&type=cancel&showFailedExit=true
 
 const logToFile = (message) => {
     const timestamp = new Date().toISOString();
@@ -48,12 +45,11 @@ const logToFile = (message) => {
     console.log(message);
 };
 
-async function processIsins() {
-    let code = "BONTHU1";
-    // updateMode options: 'success', 'fail', 'alternating'
-    let updateMode = 'success';
+export async function processIsins(partyCode, model = "success", EligibleISINCount = 5, InEligibleISINCount = 0, statusCode = "success", quantity = 0, price = 20.888) {
+    let code = partyCode;
+    let updateMode = model;
 
-    const data = await callData(5, code);
+    const data = await callData(EligibleISINCount, InEligibleISINCount, code);
     logToFile(`Data: ${JSON.stringify(data)}`);
 
     // Select eligible ISINs for the specific party code
@@ -69,6 +65,7 @@ async function processIsins() {
 
         let totalSucceeded = 0;
         let totalFailed = 0;
+        const processedDetails = [];
 
         for (let i = 0; i < eligibleIsins.length; i += batchSize) {
             const batch = eligibleIsins.slice(i, i + batchSize);
@@ -81,7 +78,7 @@ async function processIsins() {
                 const globalIndex = i + indexInBatch;
                 let status = "success";
 
-                if (updateMode === 'alternating') {
+                if (updateMode === statusCode) {
                     status = globalIndex % 2 === 0 ? "success" : "failed";
                     console.log(`ISIN ${isin} will be updated with status: ${status}`);
                 } else {
@@ -89,10 +86,11 @@ async function processIsins() {
                     console.log(`ISIN ${isin} will be updated with status: ${status}`);
                 }
 
-                return updateIsin(isin, code, status);
+                return updateIsin(isin, code, status, quantity, price);
             });
 
             const results = await Promise.all(updatePromises);
+            processedDetails.push(...results);
 
             results.forEach(res => {
                 if (res && res.success !== false) {
@@ -113,10 +111,9 @@ async function processIsins() {
         } else {
             logToFile(`\nUpdates finished with ${totalFailed} failures.`);
         }
+
+        return processedDetails;
     }
+
+    return { error: "No ISINs found" };
 }
-
-processIsins();
-
-
-
